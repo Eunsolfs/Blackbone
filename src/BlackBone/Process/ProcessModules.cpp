@@ -391,26 +391,11 @@ namespace blackbone {
 
 		// Write dll name into target process
 		auto fillDllName = [&modName, &path](auto& ustr) {
-			/*ustr.Buffer = modName->ptr<typename std::decay_t<decltype(ustr)>::type>() + sizeof( ustr );
-			ustr.MaximumLength = ustr.Length = static_cast<USHORT>(path.size() * sizeof( wchar_t ));
-			modName->Write( 0, ustr );
-			modName->Write( sizeof( ustr ), path.size() * sizeof( wchar_t ), path.c_str() );
-			return static_cast<uint32_t>(sizeof( ustr ));*/
-
-			//https://github.com/Elocrypt/Blackbone/commit/c4191a1f064039f824ff337cbf84f541a683f036
-			auto& memoryBlock = modName.result();
-			auto basePtr = memoryBlock.ptr<uint8_t*>();
 			ustr.Buffer = modName->ptr<typename std::decay_t<decltype(ustr)>::type>() + sizeof(ustr);
 			ustr.MaximumLength = ustr.Length = static_cast<USHORT>(path.size() * sizeof(wchar_t));
-			NTSTATUS status = memoryBlock.Write(0, sizeof(ustr), &ustr);
-			if (!NT_SUCCESS(status)) {
-				// TODO: handle error
-			}
-			status = memoryBlock.Write(sizeof(ustr), path.size() * sizeof(wchar_t), path.c_str());
-			if (!NT_SUCCESS(status)) {
-				// TODO: handle error
-			}
-			return static_cast<uint32_t>(sizeof(ustr) + path.size() * sizeof(wchar_t));
+			modName->Write(0, ustr);
+			modName->Write(sizeof(ustr), path.size() * sizeof(wchar_t), path.c_str());
+			return static_cast<uint32_t>(sizeof(ustr));
 			};
 
 		if (img.mType() == mt_mod32) {
