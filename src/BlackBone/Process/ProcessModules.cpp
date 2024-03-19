@@ -400,7 +400,7 @@ namespace blackbone {
 			//https://github.com/Elocrypt/Blackbone/commit/c4191a1f064039f824ff337cbf84f541a683f036
 			auto& memoryBlock = modName.result();
 			auto basePtr = memoryBlock.ptr<uint8_t*>();
-			ustr.Buffer = reinterpret_cast<decltype(ustr.Buffer)>(basePtr + sizeof(ustr));
+			ustr.Buffer = modName->ptr<typename std::decay_t<decltype(ustr)>::type>() + sizeof(ustr);
 			ustr.MaximumLength = ustr.Length = static_cast<USHORT>(path.size() * sizeof(wchar_t));
 			NTSTATUS status = memoryBlock.Write(0, sizeof(ustr), &ustr);
 			if (!NT_SUCCESS(status)) {
